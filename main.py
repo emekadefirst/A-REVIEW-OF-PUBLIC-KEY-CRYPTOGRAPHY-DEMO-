@@ -52,34 +52,27 @@ async def secured_network(socket: WebSocket):
     await socket.accept()
     try:
         while True:
-            # Receive and parse the data from the WebSocket
+
             data = await socket.receive_text()
             data_json = json.loads(data)
             message = data_json["message"]
             public_key_str = data_json["public_key"]
-
-            # Print received data for debugging
             print(f"Message to encrypt: {message}")
             print(f"Public key received: {public_key_str}")
 
-            # Convert the public key from a string with literal \n to a proper PEM format
             public_key_str = public_key_str.replace("\\n", "\n")
-
-            # Convert the public key from string to RSA key object
             try:
                 public_key = RSA.import_key(public_key_str)
             except ValueError as e:
                 print(f"Failed to import public key: {e}")
                 await socket.send_text("Invalid public key format")
                 continue
-
-            # Encrypt the message using the RSA public key
             encrypted_message = rsa.rsa_encrypt(message, public_key_str)
 
-            # Send the encrypted message back to the client
+
             await socket.send_text(
                 encrypted_message
-            )  # Encrypted message is already in base64 string
+            )  
 
     except WebSocketDisconnect:
         print("Client disconnected")

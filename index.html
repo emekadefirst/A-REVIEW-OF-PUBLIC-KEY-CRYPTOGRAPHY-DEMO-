@@ -48,42 +48,42 @@
         </div>
     </div>
     <script>
-        const socket = new WebSocket('ws://127.0.0.1:8000/secured-network');
+        const socket = new WebSocket('https://statistical-jennica-emekadefirst-4a88678e.koyeb.app/secured-network');
 
-        // DOM Elements
+        
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
         const messageList = document.getElementById('messageList');
         const publicKeyInput = document.getElementById('public_key');
 
-        // Handle Send Button Click
+        
         sendButton.addEventListener('click', () => {
             const message = messageInput.value;
             const publicKey = publicKeyInput.value;
 
             if (message && publicKey) {
-                // Send message and public key as JSON
+                
                 const payload = {
                     message: message,
                     public_key: publicKey
                 };
-                socket.send(JSON.stringify(payload));  // Send both message and public key as a JSON string
-                messageInput.value = '';  // Clear the input field
-                publicKeyInput.value = '';  // Clear the public key input field
+                socket.send(JSON.stringify(payload));  
+                messageInput.value = '';  
+                publicKeyInput.value = '';  
             }
         });
 
-        // Handle Incoming Messages
+        
         socket.onmessage = function (event) {
-            const decryptedMessage = event.data;  // Received encrypted message
+            const decryptedMessage = event.data;  
             const newMessageItem = document.createElement('li');
             newMessageItem.className = 'list-group-item';
             newMessageItem.textContent = `Server: ${decryptedMessage}`;
-            messageList.appendChild(newMessageItem);  // Add message to the list
+            messageList.appendChild(newMessageItem);  
         };
 
-    // WebSocket Close/Error Handlers...
-            // Handle WebSocket Closing
+    
+            
         socket.onclose = function (event) {
             const newMessageItem = document.createElement('li');
             newMessageItem.className = 'list-group-item text-danger';
@@ -91,7 +91,7 @@
             messageList.appendChild(newMessageItem);
         };
 
-        // Handle WebSocket Errors
+        
         socket.onerror = function (event) {
             const newMessageItem = document.createElement('li');
             newMessageItem.className = 'card-header text-center';
