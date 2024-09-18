@@ -2,8 +2,8 @@ from Crypto.PublicKey import RSA
 
 
 def generate_rsa_keys():
-   
-    key = RSA.generate(2048) 
+
+    key = RSA.generate(2048)
     private_key = key.export_key()
     public_key = key.publickey().export_key()
     with open('private_key.pem', 'wb') as priv_file:
@@ -15,4 +15,5 @@ def generate_rsa_keys():
             "private_key": private_key
         }
     return key
+
 

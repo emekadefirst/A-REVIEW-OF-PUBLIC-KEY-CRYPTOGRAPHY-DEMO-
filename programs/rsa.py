@@ -20,9 +20,18 @@ def rsa_encrypt(message, public_key_str):
     )  
 
 
-def rsa_decrypt(encrypted_message, private_key_path='private_key.pem'):
-    with open(private_key_path, 'rb') as priv_file:
-        private_key = RSA.import_key(priv_file.read())
+
+def rsa_decrypt(encrypted_message, private_key_str):
+    private_key = RSA.import_key(private_key_str)
     cipher_rsa = PKCS1_OAEP.new(private_key)
-    decrypted_message = cipher_rsa.decrypt(encrypted_message).decode('utf-8')
+    encrypted_message = base64.b64decode(encrypted_message)
+    decrypted_message = cipher_rsa.decrypt(encrypted_message).decode("utf-8")
     return decrypted_message
+
+
+# def rsa_decrypt(encrypted_message, private_key_path='private_key.pem'):
+#     with open(private_key_path, 'rb') as priv_file:
+#         private_key = RSA.import_key(priv_file.read())
+#     cipher_rsa = PKCS1_OAEP.new(private_key)
+#     decrypted_message = cipher_rsa.decrypt(encrypted_message).decode('utf-8')
+#     return decrypted_message

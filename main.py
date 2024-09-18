@@ -1,24 +1,47 @@
 import json
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from programs import rsa
+from Crypto.PublicKey import RSA
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 from programs import ecc, gen_key, rsa
+from Crypto.PublicKey import RSA
 
-app = FastAPI(title="A REVIEW OF PUBLIC KEY CRYPTOGRAPHY (DEMO)")
+app = FastAPI(title="A REVIEW OF PUBLIC KEY CRYPTOGRAPHY (DEMO)" )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],  
+    allow_credentials=True,
+    allow_methods=["*"],  
+    allow_headers=["*"],  
+)
 
 
 class Message(BaseModel):
-    message: str
-    public_key: str
+    message: str  # The encrypted message (in base64 format)
+    private_key: str  # The private key (in PEM format)
 
 
 @app.get("/")
 def home():
     response = {
         "message": "A REVIEW OF PUBLIC KEY CRYPTOGRAPHY",
-        "API doc address": "http://127.0.0.1:8000/docs",
+        "API doc address": "https://statistical-jennica-emekadefirst-4a88678e.koyeb.app/docs",
     }
     return response
+
+
+@app.post("/message/decrypt")
+def decrypt(message: Message):
+    try:
+        decrypted_message = rsa.rsa_decrypt(message.message, message.private_key)
+        return {"decrypted_message": decrypted_message}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Decryption failed: {str(e)}")
 
 
 @app.get("/rsa/key")
@@ -39,12 +62,6 @@ def fetch_ecc_keys():
         "public_key": key["public_key"],
         "private_key": key["private_key"],
     }
-
-
-from fastapi import WebSocket, WebSocketDisconnect
-import json
-from Crypto.PublicKey import RSA
-from programs import rsa  # Assuming rsa.rsa_encrypt is in the rsa module
 
 
 @app.websocket("/secured-network")
